@@ -33,211 +33,15 @@ import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.PlaceReport;
 import com.google.android.gms.location.places.Places;
 
-/*
- * for finding current place 1
- */
-//public class MainActivity extends FragmentActivity
-//        implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
-//    private static final int PERMISSION_REQUEST_CODE = 101;
-//    private GoogleApiClient mGoogleApiClient;
-//
-//
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-//        // ATTENTION: This "addApi(AppIndex.API)"was auto-generated to implement the App Indexing API.
-//        // See https://g.co/AppIndexing/AndroidStudio for more information.
-//        mGoogleApiClient = new GoogleApiClient
-//                .Builder(this)
-//                .addApi(Places.GEO_DATA_API)
-//                .addApi(Places.PLACE_DETECTION_API)
-//                .addConnectionCallbacks(this)
-//                .addOnConnectionFailedListener(this)
-//                .enableAutoManage(this, this)
-//                .build();
-//
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            Toast.makeText(getApplicationContext(), "permission not given", Toast.LENGTH_SHORT)
-//                    .show();
-//            return;
-//        }
-//        boolean q1 = isOnline();
-//        if (!q1) {
-//            Toast.makeText(getApplicationContext(), "internet permission not given", Toast.LENGTH_SHORT)
-//                    .show();
-//            return;
-//        }
-//    }
-//
-//    @Override
-//    public void onConnected(@Nullable Bundle bundle) {
-//        if (mGoogleApiClient != null) {
-//            mGoogleApiClient.connect();
-//        }
-//    }
-//
-//
-//    public boolean isOnline() {
-//        ConnectivityManager cm =
-//                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-//
-//        return cm.getActiveNetworkInfo() != null &&
-//                cm.getActiveNetworkInfo().isConnectedOrConnecting();
-//    }
-//
-//    @Override
-//    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-//        Toast.makeText(getApplicationContext(), "Connection failed", Toast.LENGTH_LONG)
-//                .show();
-//    }
-//
-//
-//    @Override
-//    public void onConnectionSuspended(int i) {
-//        Toast.makeText(getApplicationContext(), "Connection suspended", Toast.LENGTH_LONG)
-//                .show();
-//    }
-//
-//    public void process(View v) {
-//        if (mGoogleApiClient.isConnected()) {
-//            if (ContextCompat.checkSelfPermission(this,
-//                    Manifest.permission.ACCESS_FINE_LOCATION)
-//                    != PackageManager.PERMISSION_GRANTED) {
-//                ActivityCompat.requestPermissions(this,
-//                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-//                        PERMISSION_REQUEST_CODE);
-//            } else {
-//                this.callPlaceDetectionApi();
-//            }
-//        }
-//    }
-//        void callPlaceDetectionApi()throws SecurityException{
-//            PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
-//                    .getCurrentPlace(mGoogleApiClient, null);
-//            result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
-//                @Override
-//                public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
-//                    for (PlaceLikelihood placeLikelihood : likelyPlaces) {
-//                        Log.i("sayan", String.format("Place '%s' with " +
-//                                        "likelihood: %g",
-//                                placeLikelihood.getPlace().getName(),
-//                                placeLikelihood.getLikelihood()));
-//                    }
-//                    likelyPlaces.release();
-//                }
-//            });
-//        }
-//}
-
-/*
- * for finding current place 2
- */
-//public class MainActivity extends FragmentActivity implements
-//        GoogleApiClient.OnConnectionFailedListener {
-//    private static final String LOG_TAG = "PlacesAPIActivity";
-//    private static final int GOOGLE_API_CLIENT_ID = 0;
-//     private GoogleApiClient mGoogleApiClient;
-//    private static final int PERMISSION_REQUEST_CODE = 100;
-//
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-//        Button currentButton = (Button) findViewById(R.id.button2);
-//        mGoogleApiClient = new GoogleApiClient.Builder(this)
-//                .addApi(Places.PLACE_DETECTION_API)
-//                .addApi(Places.GEO_DATA_API)
-//                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-//                    @Override
-//                    public void onConnected(Bundle bundle) {
-//                        callPlaceDetectionApi();
-//                    }
-//
-//                    @Override
-//                    public void onConnectionSuspended(int i) {
-//
-//                    }
-//                })
-//                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
-//                    @Override
-//                    public void onConnectionFailed(ConnectionResult connectionResult) {
-//
-//                    }
-//                })
-//                .enableAutoManage(this, this)
-//                .build();
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions( this, new String[] { Manifest.permission.ACCESS_COARSE_LOCATION  }, 2 );
-//        }
-//        currentButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (mGoogleApiClient.isConnected()) {
-//                    if (ContextCompat.checkSelfPermission(MainActivity.this,
-//                            Manifest.permission.ACCESS_FINE_LOCATION)
-//                            != PackageManager.PERMISSION_GRANTED) {
-//                        ActivityCompat.requestPermissions(MainActivity.this,
-//                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-//                                PERMISSION_REQUEST_CODE);
-//                    } else {
-//                        callPlaceDetectionApi();
-//                    }
-//
-//                }
-//            }
-//        });
-//    }
-//
-//    @Override
-//    public void onConnectionFailed(ConnectionResult connectionResult) {
-//        Log.e(LOG_TAG, "Google Places API connection failed with error code: "
-//                + connectionResult.getErrorCode());
-//
-//        Toast.makeText(MainActivity.this,
-//                "Google Places API connection failed with error code:" +
-//                        connectionResult.getErrorCode(),
-//                Toast.LENGTH_LONG).show();
-//    }
-//
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode,
-//                                           String permissions[], int[] grantResults) {
-//        switch (requestCode) {
-//            case PERMISSION_REQUEST_CODE:
-//                if (grantResults.length > 0
-//                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                    callPlaceDetectionApi();
-//                }
-//                break;
-//        }
-//    }
-//
-//    private void callPlaceDetectionApi() throws SecurityException {
-//        PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
-//                .getCurrentPlace(mGoogleApiClient, null);
-//        result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
-//            @Override
-//            public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
-//                if (likelyPlaces.getCount()==0){
-//                    Log.d(LOG_TAG,""+likelyPlaces);
-//                    Toast.makeText(MainActivity.this,"clicked",Toast.LENGTH_LONG).show();
-//                }
-//                for (PlaceLikelihood placeLikelihood : likelyPlaces) {
-//                    Log.i(LOG_TAG, String.format("Place '%s' with " +
-//                                    "likelihood: %g",
-//                            placeLikelihood.getPlace().getName(),
-//                            placeLikelihood.getLikelihood()));
-//                }
-//                likelyPlaces.release();
-//            }
-//        });
-//    }
-
-
 public class MainActivity extends AppCompatActivity implements
-        ActionBar.TabListener {
+        ActionBar.TabListener,
+        GoogleApiClient.OnConnectionFailedListener {
 
+    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 100;
+    private static final String LOG_TAG = "sayan";
+    //for google place api
+    private GoogleApiClient mGoogleApiClient;
+    //for swipe tab
     private ViewPager viewPager;
     private TabsPagerAdapter mAdapter;
     private ActionBar actionBar;
@@ -249,6 +53,35 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //for google place api
+        mGoogleApiClient = new GoogleApiClient
+                .Builder(this)
+                .addApi(Places.GEO_DATA_API)
+                .addApi(Places.PLACE_DETECTION_API)
+                .enableAutoManage(this, this)
+                .build();
+        Toast.makeText(MainActivity.this,"before permission check",Toast.LENGTH_LONG).show();
+        //check if permission granted
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(MainActivity.this,"permission check1",Toast.LENGTH_LONG).show();
+            // explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                Toast.makeText(this,"For getting information about nearby Restaurants," +
+                        "Location permission is needed.",Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(MainActivity.this,"permission check2",Toast.LENGTH_LONG).show();
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+            }
+        }else {
+            Toast.makeText(MainActivity.this,"permission already granted",Toast.LENGTH_LONG).show();
+            callPlaceDetectionApi();
+        }
+        //for swipe tab
         // Initilization
         viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar =  getSupportActionBar();
@@ -300,4 +133,65 @@ public class MainActivity extends AppCompatActivity implements
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
 
     }
+
+
+    //for google place api
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.e(LOG_TAG, "Google Places API connection failed with error code: "
+                + connectionResult.getErrorCode());
+
+        Toast.makeText(MainActivity.this,
+                "Google Places API connection failed with error code:" +
+                        connectionResult.getErrorCode(),
+                Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted
+                    Toast.makeText(MainActivity.this,"granted",Toast.LENGTH_LONG).show();
+                    callPlaceDetectionApi();
+
+                } else {
+                    Toast.makeText(MainActivity.this,"denied",Toast.LENGTH_LONG).show();
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+            }
+        }
+    }
+
+    private void callPlaceDetectionApi() throws SecurityException {
+        Toast.makeText(MainActivity.this,"in callPlaceDetectionApi",Toast.LENGTH_LONG).show();
+        PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
+                .getCurrentPlace(mGoogleApiClient, null);
+        result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
+            @Override
+            public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
+                Toast.makeText(MainActivity.this,"in onResult",Toast.LENGTH_LONG).show();
+                if (likelyPlaces.getCount()==0){
+                    Toast.makeText(MainActivity.this,"no places found",Toast.LENGTH_LONG).show();
+                    Log.d(LOG_TAG,""+likelyPlaces);
+                }
+                for (PlaceLikelihood placeLikelihood : likelyPlaces) {
+                    Toast.makeText(MainActivity.this,"likely places",Toast.LENGTH_LONG).show();
+                    Log.i(LOG_TAG, String.format("Place '%s' with " +
+                                    "likelihood: %g",
+                            placeLikelihood.getPlace().getName(),
+                            placeLikelihood.getLikelihood()));
+                    Toast.makeText(MainActivity.this,"places found",Toast.LENGTH_LONG).show();
+                }
+                likelyPlaces.release();
+            }
+        });
+    }
+
 }
