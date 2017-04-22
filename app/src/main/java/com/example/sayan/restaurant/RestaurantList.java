@@ -23,15 +23,15 @@ public class RestaurantList extends Fragment {
 
     //global var
     ListView listView;
-    String[] titles,descriptions;
+    String[] titles, descriptions;
 
     //image array(R.drawable.xxx returns int id)
     int[] images = {
-//            R.drawable.afterrainbow,R.drawable.clearnight,R.drawable.cloudgoesaway,
-//            R.drawable.cloudy,R.drawable.foggy,R.drawable.heavyshower,R.drawable.hotday,
-//            R.drawable.night,R.drawable.nightrain,R.drawable.partlycloudy,
-//            R.drawable.rainwiththunder,R.drawable.windy,R.drawable.sunny,R.drawable.superhot,
-//            R.drawable.rainy
+            R.drawable.afterrainbow,R.drawable.clearnight,R.drawable.cloudgoesaway,
+            R.drawable.cloudy,R.drawable.foggy,R.drawable.heavyshower,R.drawable.hotday,
+            R.drawable.night,R.drawable.nightrain,R.drawable.partlycloudy,
+            R.drawable.rainwiththunder,R.drawable.windy,R.drawable.sunny,R.drawable.superhot,
+            R.drawable.rainy
     };
 
     public RestaurantList() {
@@ -45,8 +45,8 @@ public class RestaurantList extends Fragment {
 
             //set String array from resources
             Resources resources = getResources();
-//            titles = resources.getStringArray(R.array.titles);
-//            descriptions = resources.getStringArray(R.array.descriptions);
+            titles = resources.getStringArray(R.array.titles);
+            descriptions = resources.getStringArray(R.array.descriptions);
             listView = (ListView) v.findViewById(R.id.listView_id);
 
         //set listview rows using custom adapter
