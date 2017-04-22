@@ -1,6 +1,7 @@
 package com.example.sayan.restaurant;
 
 import android.Manifest;
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
@@ -10,7 +11,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -29,6 +32,9 @@ import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.PlaceReport;
 import com.google.android.gms.location.places.Places;
 
+/*
+ * for finding current place 1
+ */
 //public class MainActivity extends FragmentActivity
 //        implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 //    private static final int PERMISSION_REQUEST_CODE = 101;
@@ -123,104 +129,174 @@ import com.google.android.gms.location.places.Places;
 //        }
 //}
 
+/*
+ * for finding current place 2
+ */
+//public class MainActivity extends FragmentActivity implements
+//        GoogleApiClient.OnConnectionFailedListener {
+//    private static final String LOG_TAG = "PlacesAPIActivity";
+//    private static final int GOOGLE_API_CLIENT_ID = 0;
+//     private GoogleApiClient mGoogleApiClient;
+//    private static final int PERMISSION_REQUEST_CODE = 100;
+//
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_main);
+//        Button currentButton = (Button) findViewById(R.id.button2);
+//        mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                .addApi(Places.PLACE_DETECTION_API)
+//                .addApi(Places.GEO_DATA_API)
+//                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+//                    @Override
+//                    public void onConnected(Bundle bundle) {
+//                        callPlaceDetectionApi();
+//                    }
+//
+//                    @Override
+//                    public void onConnectionSuspended(int i) {
+//
+//                    }
+//                })
+//                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+//                    @Override
+//                    public void onConnectionFailed(ConnectionResult connectionResult) {
+//
+//                    }
+//                })
+//                .enableAutoManage(this, this)
+//                .build();
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions( this, new String[] { Manifest.permission.ACCESS_COARSE_LOCATION  }, 2 );
+//        }
+//        currentButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (mGoogleApiClient.isConnected()) {
+//                    if (ContextCompat.checkSelfPermission(MainActivity.this,
+//                            Manifest.permission.ACCESS_FINE_LOCATION)
+//                            != PackageManager.PERMISSION_GRANTED) {
+//                        ActivityCompat.requestPermissions(MainActivity.this,
+//                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+//                                PERMISSION_REQUEST_CODE);
+//                    } else {
+//                        callPlaceDetectionApi();
+//                    }
+//
+//                }
+//            }
+//        });
+//    }
+//
+//    @Override
+//    public void onConnectionFailed(ConnectionResult connectionResult) {
+//        Log.e(LOG_TAG, "Google Places API connection failed with error code: "
+//                + connectionResult.getErrorCode());
+//
+//        Toast.makeText(MainActivity.this,
+//                "Google Places API connection failed with error code:" +
+//                        connectionResult.getErrorCode(),
+//                Toast.LENGTH_LONG).show();
+//    }
+//
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode,
+//                                           String permissions[], int[] grantResults) {
+//        switch (requestCode) {
+//            case PERMISSION_REQUEST_CODE:
+//                if (grantResults.length > 0
+//                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    callPlaceDetectionApi();
+//                }
+//                break;
+//        }
+//    }
+//
+//    private void callPlaceDetectionApi() throws SecurityException {
+//        PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
+//                .getCurrentPlace(mGoogleApiClient, null);
+//        result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
+//            @Override
+//            public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
+//                if (likelyPlaces.getCount()==0){
+//                    Log.d(LOG_TAG,""+likelyPlaces);
+//                    Toast.makeText(MainActivity.this,"clicked",Toast.LENGTH_LONG).show();
+//                }
+//                for (PlaceLikelihood placeLikelihood : likelyPlaces) {
+//                    Log.i(LOG_TAG, String.format("Place '%s' with " +
+//                                    "likelihood: %g",
+//                            placeLikelihood.getPlace().getName(),
+//                            placeLikelihood.getLikelihood()));
+//                }
+//                likelyPlaces.release();
+//            }
+//        });
+//    }
+
+
 public class MainActivity extends FragmentActivity implements
-        GoogleApiClient.OnConnectionFailedListener {
-    private static final String LOG_TAG = "PlacesAPIActivity";
-    private static final int GOOGLE_API_CLIENT_ID = 0;
-     private GoogleApiClient mGoogleApiClient;
-    private static final int PERMISSION_REQUEST_CODE = 100;
+        ActionBar.TabListener {
+
+    private ViewPager viewPager;
+    private TabsPagerAdapter mAdapter;
+    private ActionBar actionBar;
+    // Tab titles
+    private String[] tabs = { "Restaurants", "Profile" };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button currentButton = (Button) findViewById(R.id.button2);
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Places.PLACE_DETECTION_API)
-                .addApi(Places.GEO_DATA_API)
-                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-                    @Override
-                    public void onConnected(Bundle bundle) {
-                        callPlaceDetectionApi();
-                    }
 
-                    @Override
-                    public void onConnectionSuspended(int i) {
+        // Initilization
+        viewPager = (ViewPager) findViewById(R.id.pager);
+        actionBar = getActionBar();
+        mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
 
-                    }
-                })
-                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
-                    @Override
-                    public void onConnectionFailed(ConnectionResult connectionResult) {
+        viewPager.setAdapter(mAdapter);
+        actionBar.setHomeButtonEnabled(false);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-                    }
-                })
-                .enableAutoManage(this, this)
-                .build();
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions( this, new String[] { Manifest.permission.ACCESS_COARSE_LOCATION  }, 2 );
+        // Adding Tabs
+        for (String tab_name : tabs) {
+            actionBar.addTab(actionBar.newTab().setText(tab_name)
+                    .setTabListener(this));
         }
-        currentButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mGoogleApiClient.isConnected()) {
-                    if (ContextCompat.checkSelfPermission(MainActivity.this,
-                            Manifest.permission.ACCESS_FINE_LOCATION)
-                            != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(MainActivity.this,
-                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                PERMISSION_REQUEST_CODE);
-                    } else {
-                        callPlaceDetectionApi();
-                    }
 
-                }
+        /**
+         * on swiping the viewpager make respective tab selected
+         * */
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageSelected(int position) {
+                // on changing the page
+                // make respected tab selected
+                actionBar.setSelectedNavigationItem(position);
+            }
+
+            @Override
+            public void onPageScrolled(int arg0, float arg1, int arg2) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int arg0) {
             }
         });
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.e(LOG_TAG, "Google Places API connection failed with error code: "
-                + connectionResult.getErrorCode());
-
-        Toast.makeText(MainActivity.this,
-                "Google Places API connection failed with error code:" +
-                        connectionResult.getErrorCode(),
-                Toast.LENGTH_LONG).show();
+    public void onTabSelected(ActionBar.Tab tab, android.app.FragmentTransaction ft) {
+        viewPager.setCurrentItem(tab.getPosition());
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_REQUEST_CODE:
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    callPlaceDetectionApi();
-                }
-                break;
-        }
+    public void onTabUnselected(ActionBar.Tab tab, android.app.FragmentTransaction ft) {
+
     }
 
-    private void callPlaceDetectionApi() throws SecurityException {
-        PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
-                .getCurrentPlace(mGoogleApiClient, null);
-        result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
-            @Override
-            public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
-                if (likelyPlaces.getCount()==0){
-                    Log.d(LOG_TAG,""+likelyPlaces);
-                    Toast.makeText(MainActivity.this,"clicked",Toast.LENGTH_LONG).show();
-                }
-                for (PlaceLikelihood placeLikelihood : likelyPlaces) {
-                    Log.i(LOG_TAG, String.format("Place '%s' with " +
-                                    "likelihood: %g",
-                            placeLikelihood.getPlace().getName(),
-                            placeLikelihood.getLikelihood()));
-                }
-                likelyPlaces.release();
-            }
-        });
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, android.app.FragmentTransaction ft) {
+
     }
 }
