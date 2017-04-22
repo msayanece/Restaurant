@@ -35,7 +35,7 @@ import com.google.android.gms.location.places.Places;
 
 public class MainActivity extends AppCompatActivity implements
         ActionBar.TabListener,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
     private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     private static final String LOG_TAG = "sayan";
@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity implements
     private GoogleApiClient mGoogleApiClient;
     //for swipe tab
     private ViewPager viewPager;
-    private TabsPagerAdapter mAdapter;
     private ActionBar actionBar;
     // Tab titles
     private String[] tabs = { "Restaurants", "Profile" };
@@ -58,34 +57,37 @@ public class MainActivity extends AppCompatActivity implements
                 .Builder(this)
                 .addApi(Places.GEO_DATA_API)
                 .addApi(Places.PLACE_DETECTION_API)
-                .enableAutoManage(this, this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .enableAutoManage(this, 0, this)
                 .build();
+        mGoogleApiClient.connect();
         Toast.makeText(MainActivity.this,"before permission check",Toast.LENGTH_LONG).show();
         //check if permission granted
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(MainActivity.this,"permission check1",Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "permission check1", Toast.LENGTH_LONG).show();
             // explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
-                Toast.makeText(this,"For getting information about nearby Restaurants," +
-                        "Location permission is needed.",Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "For getting information about nearby Restaurants," +
+                        "Location permission is needed.", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(MainActivity.this,"permission check2",Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "permission check2", Toast.LENGTH_LONG).show();
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_READ_CONTACTS);
             }
-        }else {
-            Toast.makeText(MainActivity.this,"permission already granted",Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(MainActivity.this, "permission already granted", Toast.LENGTH_LONG).show();
             callPlaceDetectionApi();
         }
         //for swipe tab
         // Initilization
         viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar =  getSupportActionBar();
-        mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
+        TabsPagerAdapter mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
 
         viewPager.setAdapter(mAdapter);
 //        actionBar.setHomeButtonEnabled(false);
@@ -138,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements
     //for google place api
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Toast.makeText(MainActivity.this,"connection failed",Toast.LENGTH_LONG).show();
         Log.e(LOG_TAG, "Google Places API connection failed with error code: "
                 + connectionResult.getErrorCode());
 
@@ -149,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
                 // If request is cancelled, the result arrays are empty.
@@ -194,4 +197,16 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Toast.makeText(MainActivity.this,"onconnected"+bundle,Toast.LENGTH_LONG).show();
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Toast.makeText(MainActivity.this,"onconnectionsuspended",Toast.LENGTH_LONG).show();
+
+    }
 }
