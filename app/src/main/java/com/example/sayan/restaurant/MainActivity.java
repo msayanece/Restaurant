@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements
 
     //for picture taken
     Bitmap bitImage;
+    EditText edit;
 
     private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     private static final String LOG_TAG = "sayan";
@@ -261,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         bitImage = (Bitmap) data.getExtras().get("data");
-                        saveData(bitImage);
+                        saveData();
                         Toast.makeText(this, "Picture captured successfully", Toast.LENGTH_SHORT).show();
                         break;
                     case Activity.RESULT_CANCELED:
@@ -281,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements
                             try {
                                 InputStream inputStream = this.getContentResolver().openInputStream(data.getData());
                                 bitImage = BitmapFactory.decodeStream(inputStream);
-                                saveData(bitImage);
+                                saveData();
                                 Toast.makeText(this, "picture selected successfully", Toast.LENGTH_SHORT).show();
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
@@ -302,16 +303,16 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    private void saveData(final Bitmap bit) {
+    private void saveData() {
         ImageView image = (ImageView) findViewById(R.id.imageView2);
         final TextView text = (TextView) findViewById(R.id.textView);
-        final EditText edit = (EditText) findViewById(R.id.editText);
+        edit = (EditText) findViewById(R.id.editText);
         final Button bSave = (Button) findViewById(R.id.button3);
         final Button bEdit = (Button) findViewById(R.id.button2);
         text.setVisibility(View.INVISIBLE);
         edit.setVisibility(View.VISIBLE);
         bSave.setVisibility(View.VISIBLE);
-        image.setImageBitmap(bit);
+        image.setImageBitmap(bitImage);
         bSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -345,7 +346,7 @@ public class MainActivity extends AppCompatActivity implements
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("user_id", "72");
-                params.put("username", "Sayan");
+                params.put("username", edit.getText().toString());
                 params.put("profile_img", imageToString(bitImage));
                 return params;
             }
