@@ -97,7 +97,7 @@ public class RestaurantList extends Fragment {
             //override getView(row number[0 to (max-1)], oldview , parent [listview])
             @NonNull
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
+            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 
                 MyViewHolder holder = null;
                 View row = convertView;
@@ -108,7 +108,7 @@ public class RestaurantList extends Fragment {
                 if (row ==null) {
                     //get layout inflater object. getSystemService() returns it
                     LayoutInflater inflater = (LayoutInflater) context.getSystemService(
-                            context.LAYOUT_INFLATER_SERVICE);
+                            Context.LAYOUT_INFLATER_SERVICE);
 
                     //inflate single row activity
                     //inflate(the activity to be inflated, the attach destination activity, if want to attach or not)
