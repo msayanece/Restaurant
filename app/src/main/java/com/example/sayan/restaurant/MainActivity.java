@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements
     private ViewPager viewPager;
     private ActionBar actionBar;
     // Tab titles
-    private String[] tabs = {"Restaurants", "Profile"};
+    private String[] tabs = {"List", "Profile"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements
             callPlaceDetectionApi();
         }
         //for swipe tab
-        // Initilization
+        // Initialization
         viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar = getSupportActionBar();
         TabsPagerAdapter mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
@@ -254,11 +254,12 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
+    //result come from camera or gallery activity
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {      //resultCode = OK or Cancel
         Toast.makeText(this, "onActivityResult called", Toast.LENGTH_SHORT).show();
         switch (requestCode) {
-            case 123:
+            case 123:                           // from camera request code 123
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         bitImage = (Bitmap) data.getExtras().get("data");
@@ -273,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements
                         break;
                 }
                 break;
-            case 321:
+            case 321:                              // from gallery request code 321
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         if (data == null) {
@@ -303,6 +304,7 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    //process image data to get all user details and to upload image to server
     private void saveData() {
         ImageView image = (ImageView) findViewById(R.id.imageView2);
         final TextView text = (TextView) findViewById(R.id.textView);

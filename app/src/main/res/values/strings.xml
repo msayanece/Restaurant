@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">Restaurants</string>
+    <string name="api_key">AIzaSyDCZOt1NVNcP_Sn8BohmdaUS4SYt1PCAPo</string>
+
+    <string name="hello_blank_fragment1">Restaurant fragment</string>
+    <string name="hello_blank_fragment2">Profile fragment</string>
+    <string name="restaurant_image">Restaurant Image</string>
+    <string name="textview">TextView</string>
+    <string name="no_profile_picture">No Profile Picture</string>
+    <string name="user_name">User Name</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="enter_user_name">Enter User Name</string>
+    <string name="open_camera">Open Camera</string>
+    <string name="open_gallery">Open Gallery</string>
+    <string name="select_options">Select your profile picture from below options</string>
+    <string name="save_profile">Save Profile</string>
+
+
+    <string-array name="titles">
+        <item>Title 1</item>
+        <item>Title 2</item>
+        <item>Title 3</item>
+        <item>Title 4</item>
+        <item>Title 5</item>
+        <item>Title 6</item>
+        <item>Title 7</item>
+        <item>Title 8</item>
+        <item>Title 9</item>
+        <item>Title 10</item>
+        <item>Title 11</item>
+        <item>Title 12</item>
+        <item>Title 13</item>
+        <item>Title 14</item>
+        <item>Title 15</item>
+    </string-array>
+    <string-array name="descriptions">
+        <item>This Description is for Title 1</item>
+        <item>This Description is for Title 2</item>
+        <item>This Description is for Title 3</item>
+        <item>This Description is for Title 4</item>
+        <item>This Description is for Title 5</item>
+        <item>This Description is for Title 6</item>
+        <item>This Description is for Title 7</item>
+        <item>This Description is for Title 8</item>
+        <item>This Description is for Title 9</item>
+        <item>This Description is for Title 10</item>
+        <item>This Description is for Title 11</item>
+        <item>This Description is for Title 12</item>
+        <item>This Description is for Title 13</item>
+        <item>This Description is for Title 14</item>
+        <item>This Description is for Title 15</item>
+
+    </string-array>
+</resources>
