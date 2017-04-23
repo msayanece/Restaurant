@@ -22,6 +22,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -33,6 +34,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -62,7 +68,10 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
+@SuppressWarnings("deprecation")
 public class MainActivity extends AppCompatActivity implements
         ActionBar.TabListener,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
@@ -252,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         bitImage = (Bitmap) data.getExtras().get("data");
-                        sendData(bitImage);
+                        saveData(bitImage);
                         Toast.makeText(this, "Picture captured successfully", Toast.LENGTH_SHORT).show();
                         break;
                     case Activity.RESULT_CANCELED:
@@ -272,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements
                             try {
                                 InputStream inputStream = this.getContentResolver().openInputStream(data.getData());
                                 bitImage = BitmapFactory.decodeStream(inputStream);
-                                sendData(bitImage);
+                                saveData(bitImage);
                                 Toast.makeText(this, "picture selected successfully", Toast.LENGTH_SHORT).show();
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
@@ -293,126 +302,62 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    private void sendData(final Bitmap bit) {
+    private void saveData(final Bitmap bit) {
         ImageView image = (ImageView) findViewById(R.id.imageView2);
-        TextView text = (TextView) findViewById(R.id.textView);
+        final TextView text = (TextView) findViewById(R.id.textView);
         final EditText edit = (EditText) findViewById(R.id.editText);
         final Button bSave = (Button) findViewById(R.id.button3);
         final Button bEdit = (Button) findViewById(R.id.button2);
-        bEdit.setVisibility(View.INVISIBLE);
-        text.setVisibility(View.GONE);
+        text.setVisibility(View.INVISIBLE);
         edit.setVisibility(View.VISIBLE);
+        bSave.setVisibility(View.VISIBLE);
         image.setImageBitmap(bit);
-        edit.setOnEditorActionListener(
-                new EditText.OnEditorActionListener() {
-                    @Override
-                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                        if (actionId == EditorInfo.IME_ACTION_SEARCH ||
-                                actionId == EditorInfo.IME_ACTION_DONE ||
-                                event.getAction() == KeyEvent.ACTION_DOWN &&
-                                        event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-                            bSave.setVisibility(View.VISIBLE);
-                            bEdit.setVisibility(View.VISIBLE);
-                            return true;
-                        }
-                        return false; // pass on to other listeners.
-                    }
-                });
         bSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String textUserName = edit.getText().toString();
-                new SendJSONData().execute(textUserName);
+                uploadData();
+                edit.setVisibility(View.INVISIBLE);
+                bSave.setVisibility(View.INVISIBLE);
+                text.setVisibility(View.VISIBLE);
+                text.setText(edit.getText());
             }
         });
     }
 
-    private class SendJSONData extends AsyncTask<String, Void, String> {
-        StringBuilder sb = new StringBuilder();
-
-        String http = "http://111.93.227.162/tour_app/api/editUser";
-
-        @Override
-        protected String doInBackground(String... params) {
-            HttpURLConnection urlConnection = null;
-            File file = null;
-            String username = null;
-            try {
-                URL url = new URL(http);
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setDoOutput(true);
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setUseCaches(false);
-                urlConnection.setConnectTimeout(10000);
-                urlConnection.setReadTimeout(10000);
-                urlConnection.setRequestProperty("Content-Type", "application/json");
-                urlConnection.setRequestProperty("Host", "android.schoolportal.gr");
-                urlConnection.connect();
-                //Create JSONObject here
-                if (params[0] == null) {
-                    return null;
-                }
-                username = params[0];
-                file = createFile(bitImage, username);
-                Log.d(LOG_TAG, "username: " + username + " image: " + file);
-
-                JSONObject jsonParam = new JSONObject();
-                jsonParam.put("user_id", "72");
-                jsonParam.put("username", username);
-                jsonParam.put("profile_img", file);
-                OutputStreamWriter out = new OutputStreamWriter(urlConnection.getOutputStream());
-                out.write(jsonParam.toString());
-                Log.d(LOG_TAG, "Para: " + jsonParam.toString());
-                out.close();
-
-                int HttpResult = urlConnection.getResponseCode();
-                if (HttpResult == HttpURLConnection.HTTP_OK) {
-                    BufferedReader br = new BufferedReader(new InputStreamReader(
-                            urlConnection.getInputStream(), "utf-8"));
-                    String line = null;
-                    while ((line = br.readLine()) != null) {
-                        sb.append(line + "\n");
+    //for uploading profile data into server using Volley
+    private void uploadData(){
+        String uploadUrl = "http://111.93.227.162/tour_app/api/editUser";
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, uploadUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(LOG_TAG, response);
                     }
-                    br.close();
-                    Log.d(LOG_TAG, "Y: " + sb.toString());
-                } else {
-                    Log.d(LOG_TAG, "N: " + urlConnection.getResponseMessage());
-                }
-            } catch (MalformedURLException e) {
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
 
-                e.printStackTrace();
-            } catch (IOException e) {
-
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } finally {
-                if (urlConnection != null)
-                    urlConnection.disconnect();
             }
-            return null;
-        }
+        })
+        {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("user_id", "72");
+                params.put("username", "Sayan");
+                params.put("profile_img", imageToString(bitImage));
+                return params;
+            }
+        };
+        VolleySingleton.getInstance(MainActivity.this).getRequestQueue().add(stringRequest);
     }
 
-    File createFile(Bitmap bitmap, String filename) {
-        //create a file to write bitmap data
-        File f = new File(filename + ".png");
-        //Convert bitmap to byte array
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
-        byte[] bitmapdata = bos.toByteArray();
-        try {
-            f.createNewFile();
-//write the bytes in file
-            FileOutputStream fos = new FileOutputStream(f);
-            fos.write(bitmapdata);
-            fos.flush();
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return f;
+    // for converting bitmap into image string
+    private String imageToString(Bitmap bitmap){
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] imgBytes = byteArrayOutputStream.toByteArray();
+        return Base64.encodeToString(imgBytes, Base64.DEFAULT);
     }
 }
