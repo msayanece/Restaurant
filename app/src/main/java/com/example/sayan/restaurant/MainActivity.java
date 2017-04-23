@@ -33,6 +33,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceFilter;
 import com.google.android.gms.location.places.PlaceLikelihood;
 import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.Places;
@@ -40,6 +42,7 @@ import com.google.android.gms.location.places.Places;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements
     Bitmap bitImage;
     EditText edit;
 
-    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 100;
+    private static final int MY_PERMISSIONS_REQUEST = 100;
     private static final String LOG_TAG = "sayan";
     //for google place api
     private GoogleApiClient mGoogleApiClient;
@@ -92,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements
                 Toast.makeText(MainActivity.this, "permission check2", Toast.LENGTH_LONG).show();
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+                        MY_PERMISSIONS_REQUEST);
             }
         } else {
             Toast.makeText(MainActivity.this, "permission already granted", Toast.LENGTH_LONG).show();
@@ -105,7 +108,6 @@ public class MainActivity extends AppCompatActivity implements
         TabsPagerAdapter mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
 
         viewPager.setAdapter(mAdapter);
-//        actionBar.setHomeButtonEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         // Adding Tabs
@@ -121,8 +123,6 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void onPageSelected(int position) {
-                // on changing the page
-                // make respected tab selected
                 actionBar.setSelectedNavigationItem(position);
             }
 
@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
+            case MY_PERMISSIONS_REQUEST: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -189,8 +189,12 @@ public class MainActivity extends AppCompatActivity implements
 
     private void callPlaceDetectionApi() throws SecurityException {
         Toast.makeText(MainActivity.this, "in callPlaceDetectionApi", Toast.LENGTH_LONG).show();
+        ArrayList<String> restrictToRestaurants = new ArrayList<>();
+        restrictToRestaurants.add(Integer.toString(Place.TYPE_RESTAURANT));
+        PlaceFilter pf;
+        pf = new PlaceFilter(false, restrictToRestaurants);
         PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
-                .getCurrentPlace(mGoogleApiClient, null);
+                .getCurrentPlace(mGoogleApiClient, pf);
         result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
             @Override
             public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
@@ -199,14 +203,22 @@ public class MainActivity extends AppCompatActivity implements
                     Toast.makeText(MainActivity.this, "no places found", Toast.LENGTH_LONG).show();
                     Log.d(LOG_TAG, "" + likelyPlaces);
                 }
+                ArrayList<String> names = new ArrayList<String>();
+                ArrayList<String> adds = new ArrayList<String>();
+                ArrayList<Float> ratings = new ArrayList<Float>();
                 for (PlaceLikelihood placeLikelihood : likelyPlaces) {
                     Toast.makeText(MainActivity.this, "likely places", Toast.LENGTH_LONG).show();
                     Log.i(LOG_TAG, String.format("Place '%s' with " +
                                     "likelihood: %g",
                             placeLikelihood.getPlace().getName(),
                             placeLikelihood.getLikelihood()));
+                    names.add(placeLikelihood.getPlace().getName().toString());
+                    adds.add(placeLikelihood.getPlace().getAddress().toString());
+                    ratings.add(placeLikelihood.getPlace().getRating());
                     Toast.makeText(MainActivity.this, "places found", Toast.LENGTH_LONG).show();
                 }
+
+
                 likelyPlaces.release();
             }
         });

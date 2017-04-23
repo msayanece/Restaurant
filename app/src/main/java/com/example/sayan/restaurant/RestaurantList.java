@@ -27,11 +27,9 @@ public class RestaurantList extends Fragment {
 
     //image array(R.drawable.xxx returns int id)
     int[] images = {
-            R.drawable.afterrainbow,R.drawable.clearnight,R.drawable.cloudgoesaway,
-            R.drawable.cloudy,R.drawable.foggy,R.drawable.heavyshower,R.drawable.hotday,
-            R.drawable.night,R.drawable.nightrain,R.drawable.partlycloudy,
-            R.drawable.rainwiththunder,R.drawable.windy,R.drawable.sunny,R.drawable.superhot,
-            R.drawable.rainy
+            R.drawable.res1,R.drawable.res2,R.drawable.res3,
+            R.drawable.res4,R.drawable.res5,R.drawable.res6,R.drawable.res7,
+            R.drawable.res8,R.drawable.res9,R.drawable.res10
     };
 
     public RestaurantList() {

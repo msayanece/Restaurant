@@ -17,38 +17,28 @@
 
 
     <string-array name="titles">
-        <item>Title 1</item>
-        <item>Title 2</item>
-        <item>Title 3</item>
-        <item>Title 4</item>
-        <item>Title 5</item>
-        <item>Title 6</item>
-        <item>Title 7</item>
-        <item>Title 8</item>
-        <item>Title 9</item>
-        <item>Title 10</item>
-        <item>Title 11</item>
-        <item>Title 12</item>
-        <item>Title 13</item>
-        <item>Title 14</item>
-        <item>Title 15</item>
+        <item>Restaurent 1</item>
+        <item>Restaurent 2</item>
+        <item>Restaurent 3</item>
+        <item>Restaurent 4</item>
+        <item>Restaurent 5</item>
+        <item>Restaurent 6</item>
+        <item>Restaurent 7</item>
+        <item>Restaurent 8</item>
+        <item>Restaurent 9</item>
+        <item>Restaurent 10</item>
     </string-array>
     <string-array name="descriptions">
-        <item>This Description is for Title 1</item>
-        <item>This Description is for Title 2</item>
-        <item>This Description is for Title 3</item>
-        <item>This Description is for Title 4</item>
-        <item>This Description is for Title 5</item>
-        <item>This Description is for Title 6</item>
-        <item>This Description is for Title 7</item>
-        <item>This Description is for Title 8</item>
-        <item>This Description is for Title 9</item>
-        <item>This Description is for Title 10</item>
-        <item>This Description is for Title 11</item>
-        <item>This Description is for Title 12</item>
-        <item>This Description is for Title 13</item>
-        <item>This Description is for Title 14</item>
-        <item>This Description is for Title 15</item>
+        <item>This Rating is for Restaurent 1</item>
+        <item>This Rating is for Restaurent 2</item>
+        <item>This Rating is for Restaurent 3</item>
+        <item>This Rating is for Restaurent 4</item>
+        <item>This Rating is for Restaurent 5</item>
+        <item>This Rating is for Restaurent 6</item>
+        <item>This Rating is for Restaurent 7</item>
+        <item>This Rating is for Restaurent 8</item>
+        <item>This Rating is for Restaurent 9</item>
+        <item>This Rating is for Restaurent 10</item>
 
     </string-array>
 </resources>
