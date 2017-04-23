@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="15dp"
+    android:id="@+id/fragment_user_profile_id"
     tools:context="com.example.sayan.restaurant.UserProfile">
 
 
@@ -41,7 +42,20 @@
         android:inputType="textPersonName"
         android:hint="@string/enter_user_name"
         android:ems="10"
+        android:layout_alignWithParentIfMissing="true"
+        android:visibility="invisible"
         android:layout_below="@+id/textView"
         android:layout_marginTop="10dp"
         android:id="@+id/editText" />
+
+    <Button
+        android:text="@string/save_profile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button2"
+        android:visibility="invisible"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="80dp"
+        android:id="@+id/button3" />
 </RelativeLayout>
