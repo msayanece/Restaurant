@@ -80,25 +80,19 @@ public class MainActivity extends AppCompatActivity implements
                 .enableAutoManage(this, 0, this)
                 .build();
         mGoogleApiClient.connect();
-        Toast.makeText(MainActivity.this, "before permission check", Toast.LENGTH_LONG).show();
         //check if permission granted
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(MainActivity.this, "permission check1", Toast.LENGTH_LONG).show();
             // explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
-                Toast.makeText(this, "For getting information about nearby Restaurants," +
-                        "Location permission is needed.", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(MainActivity.this, "permission check2", Toast.LENGTH_LONG).show();
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST);
             }
         } else {
-            Toast.makeText(MainActivity.this, "permission already granted", Toast.LENGTH_LONG).show();
             callPlaceDetectionApi();
         }
         //for swipe tab
@@ -188,7 +182,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void callPlaceDetectionApi() throws SecurityException {
-        Toast.makeText(MainActivity.this, "in callPlaceDetectionApi", Toast.LENGTH_LONG).show();
         ArrayList<String> restrictToRestaurants = new ArrayList<>();
         restrictToRestaurants.add(Integer.toString(Place.TYPE_RESTAURANT));
         PlaceFilter pf;
@@ -198,7 +191,6 @@ public class MainActivity extends AppCompatActivity implements
         result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
             @Override
             public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
-                Toast.makeText(MainActivity.this, "in onResult", Toast.LENGTH_LONG).show();
                 if (likelyPlaces.getCount() == 0) {
                     Toast.makeText(MainActivity.this, "no places found", Toast.LENGTH_LONG).show();
                     Log.d(LOG_TAG, "" + likelyPlaces);
@@ -207,7 +199,6 @@ public class MainActivity extends AppCompatActivity implements
                 ArrayList<String> adds = new ArrayList<String>();
                 ArrayList<Float> ratings = new ArrayList<Float>();
                 for (PlaceLikelihood placeLikelihood : likelyPlaces) {
-                    Toast.makeText(MainActivity.this, "likely places", Toast.LENGTH_LONG).show();
                     Log.i(LOG_TAG, String.format("Place '%s' with " +
                                     "likelihood: %g",
                             placeLikelihood.getPlace().getName(),
@@ -227,13 +218,12 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Toast.makeText(MainActivity.this, "onconnected" + bundle, Toast.LENGTH_LONG).show();
 
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        Toast.makeText(MainActivity.this, "onconnectionsuspended", Toast.LENGTH_LONG).show();
+        Toast.makeText(MainActivity.this, "onconnection suspended", Toast.LENGTH_LONG).show();
 
     }
 
@@ -241,7 +231,6 @@ public class MainActivity extends AppCompatActivity implements
     //result come from camera or gallery activity
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {      //resultCode = OK or Cancel
-        Toast.makeText(this, "onActivityResult called", Toast.LENGTH_SHORT).show();
         switch (requestCode) {
             case 123:                           // from camera request code 123
                 switch (resultCode) {
