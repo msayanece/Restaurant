@@ -15,6 +15,10 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.location.places.Place;
+
+import java.util.ArrayList;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,8 +26,9 @@ import android.widget.TextView;
 public class RestaurantList extends Fragment {
 
     //global var
-    ListView listView;
-    String[] titles, descriptions;
+    private ListView listView;
+    private ArrayList<String> titles = new ArrayList<>(), descriptions = new ArrayList<>();
+    private ArrayList<Place> places;
 
     //image array(R.drawable.xxx returns int id)
     int[] images = {
@@ -35,6 +40,9 @@ public class RestaurantList extends Fragment {
     public RestaurantList() {
     }
 
+    public RestaurantList(ArrayList<Place> places){
+        this.places = places;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,8 +51,12 @@ public class RestaurantList extends Fragment {
 
             //set String array from resources
             Resources resources = getResources();
-            titles = resources.getStringArray(R.array.titles);
-            descriptions = resources.getStringArray(R.array.descriptions);
+        for (Place place : places) {
+            titles.add(place.getName().toString());
+            descriptions.add("The Rating is: "+place.getRating());
+        }
+//            titles = resources.getStringArray(R.array.titles);
+//            descriptions = resources.getStringArray(R.array.descriptions);
             listView = (ListView) v.findViewById(R.id.listView_id);
 
         //set listview rows using custom adapter
@@ -74,12 +86,12 @@ public class RestaurantList extends Fragment {
         private class CustomAdapter extends ArrayAdapter {
 
             //global variables
-            String[] titles, descriptions;
+            ArrayList<String> titles, descriptions;
             int[] images;
             Context context;
 
             //constructor
-            CustomAdapter(Context context, String[] titles, String[] descriptions, int[] images){
+            CustomAdapter(Context context, ArrayList<String> titles, ArrayList<String> descriptions, int[] images){
 
                 //call super constructor(context, parent activity of destination, destination of data, source of data)
                 super(context,R.layout.single_row_activity,R.id.title_id,titles);
@@ -128,9 +140,9 @@ public class RestaurantList extends Fragment {
 
 
                 //fetching one data at a time and setting to views from holder object
-                holder.title.setText(titles[position]);
-                holder.description.setText(descriptions[position]);
-                holder.image.setImageResource(images[position]);
+                holder.title.setText(titles.get(position));
+                holder.description.setText(descriptions.get(position));
+                holder.image.setImageResource(images[0]);
 
                 //return the created view for one row
                 return row;

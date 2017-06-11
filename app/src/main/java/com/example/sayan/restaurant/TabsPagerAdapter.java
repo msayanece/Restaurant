@@ -4,15 +4,21 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.google.android.gms.location.places.Place;
+
+import java.util.ArrayList;
+
 
 /**
  * Created by Sayan on 22-Apr-17.
  */
 
-public class TabsPagerAdapter extends FragmentPagerAdapter {
+class TabsPagerAdapter extends FragmentPagerAdapter {
 
-    public TabsPagerAdapter(FragmentManager fm) {
+    private ArrayList<Place> places;
+    TabsPagerAdapter(FragmentManager fm, ArrayList<Place> places) {
         super(fm);
+        this.places = places;
     }
 
     @Override
@@ -20,10 +26,8 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
 
         switch (index) {
             case 0:
-                // Top Rated fragment activity
-                return new RestaurantList();
+                return new RestaurantList(places);
             case 1:
-                // Games fragment activity
                 return new UserProfile();
         }
 

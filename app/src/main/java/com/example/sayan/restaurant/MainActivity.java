@@ -2,6 +2,7 @@ package com.example.sayan.restaurant;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -14,6 +15,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
@@ -33,6 +35,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceFilter;
 import com.google.android.gms.location.places.PlaceLikelihood;
@@ -46,14 +49,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.security.auth.login.LoginException;
+
 @SuppressWarnings("deprecation")
 public class MainActivity extends AppCompatActivity implements
         ActionBar.TabListener,
-        GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
+        GoogleApiClient.OnConnectionFailedListener,
+        GoogleApiClient.ConnectionCallbacks {
 
     //for picture taken
-    Bitmap bitImage;
-    EditText edit;
+    private Bitmap bitImage;
+    private EditText edit;
+
+    private ArrayList<String> names;
+    private ArrayList<Float> ratings;
+    private ArrayList<String> adds;
+    private ArrayList<Place> places;
 
     private static final int MY_PERMISSIONS_REQUEST = 100;
     private static final String LOG_TAG = "sayan";
@@ -63,23 +74,37 @@ public class MainActivity extends AppCompatActivity implements
     private ViewPager viewPager;
     private ActionBar actionBar;
     // Tab titles
-    private String[] tabs = {"List", "Profile"};
+    private String[] tabs = {"Restaurants", "Profile"};
+    ProgressDialog loading;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //for google place api
+        loading = new ProgressDialog(this);
+        loading.setMessage("Please wait");
+        loading.setCancelable(false);
+        loading.show();
         mGoogleApiClient = new GoogleApiClient
                 .Builder(this)
+                .addApi(LocationServices.API)
                 .addApi(Places.GEO_DATA_API)
                 .addApi(Places.PLACE_DETECTION_API)
                 .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .enableAutoManage(this, 0, this)
+                .enableAutoManage(this, this)
                 .build();
-        mGoogleApiClient.connect();
+
+//        //for google place api
+//        mGoogleApiClient = new GoogleApiClient
+//                .Builder(this)
+//                .addApi(Places.GEO_DATA_API)
+//                .addApi(Places.PLACE_DETECTION_API)
+//                .addConnectionCallbacks(this)
+//                .addOnConnectionFailedListener(this)
+//                .enableAutoManage(this, 0, this)
+//                .build();
         //check if permission granted
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -93,41 +118,10 @@ public class MainActivity extends AppCompatActivity implements
                         MY_PERMISSIONS_REQUEST);
             }
         } else {
-            callPlaceDetectionApi();
+            mGoogleApiClient.connect();
         }
         //for swipe tab
         // Initialization
-        viewPager = (ViewPager) findViewById(R.id.pager);
-        actionBar = getSupportActionBar();
-        TabsPagerAdapter mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
-
-        viewPager.setAdapter(mAdapter);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-        // Adding Tabs
-        for (String tab_name : tabs) {
-            actionBar.addTab(actionBar.newTab().setText(tab_name)
-                    .setTabListener(this));
-        }
-
-        /**
-         * on swiping the viewpager make respective tab selected
-         * */
-        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
-            @Override
-            public void onPageSelected(int position) {
-                actionBar.setSelectedNavigationItem(position);
-            }
-
-            @Override
-            public void onPageScrolled(int arg0, float arg1, int arg2) {
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int arg0) {
-            }
-        });
     }
 
     @Override
@@ -170,8 +164,9 @@ public class MainActivity extends AppCompatActivity implements
 
                     // permission was granted
                     Toast.makeText(MainActivity.this, "granted", Toast.LENGTH_LONG).show();
-                    callPlaceDetectionApi();
-
+                    if (mGoogleApiClient!=null && !mGoogleApiClient.isConnected()){
+                        mGoogleApiClient.connect();
+                    }
                 } else {
                     Toast.makeText(MainActivity.this, "denied", Toast.LENGTH_LONG).show();
                     // permission denied, boo! Disable the
@@ -187,29 +182,78 @@ public class MainActivity extends AppCompatActivity implements
         PlaceFilter pf;
         pf = new PlaceFilter(false, restrictToRestaurants);
         PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
-                .getCurrentPlace(mGoogleApiClient, pf);
+                .getCurrentPlace(mGoogleApiClient, null);
         result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
             @Override
-            public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
+            public void onResult(@NonNull PlaceLikelihoodBuffer likelyPlaces) {
                 if (likelyPlaces.getCount() == 0) {
-                    Toast.makeText(MainActivity.this, "no places found", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "no places found, check if location is ON", Toast.LENGTH_LONG).show();
                     Log.d(LOG_TAG, "" + likelyPlaces);
+                    return;
                 }
-                ArrayList<String> names = new ArrayList<String>();
-                ArrayList<String> adds = new ArrayList<String>();
-                ArrayList<Float> ratings = new ArrayList<Float>();
+//                names = new ArrayList<>();
+//                adds = new ArrayList<>();
+//                ratings = new ArrayList<>();
+                places = new ArrayList<>();
                 for (PlaceLikelihood placeLikelihood : likelyPlaces) {
-                    Log.i(LOG_TAG, String.format("Place '%s' with " +
-                                    "likelihood: %g",
-                            placeLikelihood.getPlace().getName(),
-                            placeLikelihood.getLikelihood()));
-                    names.add(placeLikelihood.getPlace().getName().toString());
-                    adds.add(placeLikelihood.getPlace().getAddress().toString());
-                    ratings.add(placeLikelihood.getPlace().getRating());
-                    Toast.makeText(MainActivity.this, "places found", Toast.LENGTH_LONG).show();
+//                    Log.i(LOG_TAG, String.format("Place '%s' with " +
+//                                    "likelihood: %g",
+//                            placeLikelihood.getPlace().getName(),
+//                            placeLikelihood.getLikelihood()));
+//                    attributions.add(placeLikelihood.getPlace().getWebsiteUri().toString());
+                    places.add(placeLikelihood.getPlace());
+//                    names.add(placeLikelihood.getPlace().getName().toString());
+//                    adds.add(placeLikelihood.getPlace().getAddress().toString());
+//                    ratings.add(placeLikelihood.getPlace().getRating());
                 }
+                loading.dismiss();
 
+                viewPager = (ViewPager) findViewById(R.id.pager);
+                actionBar = getSupportActionBar();
+                TabsPagerAdapter mAdapter = new TabsPagerAdapter(getSupportFragmentManager(), places);
 
+                viewPager.setAdapter(mAdapter);
+                actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+                // Adding Tabs
+                for (String tab_name : tabs) {
+                    actionBar.addTab(actionBar.newTab().setText(tab_name)
+                            .setTabListener(MainActivity.this));
+                }
+                /**
+                 * on swiping the viewpager make respective tab selected
+                 * */
+                viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+                    @Override
+                    public void onPageSelected(int position) {
+                        actionBar.setSelectedNavigationItem(position);
+                    }
+
+                    @Override
+                    public void onPageScrolled(int arg0, float arg1, int arg2) {
+                    }
+
+                    @Override
+                    public void onPageScrollStateChanged(int arg0) {
+                    }
+                });
+//                int i = 0;
+//                for (String name : names) {
+//                    Log.e("sayan", "Name: "+(++i)+") "+name);
+//                }
+//                i = 0;
+//                for (String add : adds) {
+//                    Log.e("sayan", "Address: "+(++i)+") "+add);
+//                }
+//                i = 0;
+//                for (Float rating : ratings) {
+//                    Log.e("sayan", "Rating: "+(++i)+") "+rating);
+//                }
+//                i = 0;
+//                for (String attri : attributions) {
+//                    Log.e("sayan", "Rating: "+(++i)+") "+attri);
+//                }
                 likelyPlaces.release();
             }
         });
@@ -218,7 +262,8 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-
+        callPlaceDetectionApi();
+//        startActivity(new Intent(this, TestActivity.class));
     }
 
     @Override
