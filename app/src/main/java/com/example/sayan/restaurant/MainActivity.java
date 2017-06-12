@@ -42,6 +42,9 @@ import com.google.android.gms.location.places.PlaceLikelihood;
 import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.Places;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -61,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements
     private Bitmap bitImage;
     private EditText edit;
 
-    private ArrayList<String> names;
+    private ArrayList<String> refs;
     private ArrayList<Float> ratings;
     private ArrayList<String> adds;
     private ArrayList<Place> places;
@@ -202,6 +205,7 @@ public class MainActivity extends AppCompatActivity implements
 //                            placeLikelihood.getLikelihood()));
 //                    attributions.add(placeLikelihood.getPlace().getWebsiteUri().toString());
                     places.add(placeLikelihood.getPlace());
+                    String photoReference = getPlaceDetails(placeLikelihood.getPlace().getId());
 //                    names.add(placeLikelihood.getPlace().getName().toString());
 //                    adds.add(placeLikelihood.getPlace().getAddress().toString());
 //                    ratings.add(placeLikelihood.getPlace().getRating());
@@ -372,6 +376,48 @@ public class MainActivity extends AppCompatActivity implements
             }
         };
         VolleySingleton.getInstance(MainActivity.this).getRequestQueue().add(stringRequest);
+    }
+
+    private String getPlaceDetails(String placeId){
+
+        String uploadUrl = "https://maps.googleapis.com/maps/api/place/details/json?placeid="
+        +placeId+"&key="+getResources().getString(R.string.api_key);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, uploadUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        response = response.replace("\n", "").replace("\r", "").replace(" ","");
+                        Log.d(LOG_TAG+"1", response);
+                        JSONObject responseJSONObject = null;
+                        ArrayList<Object> refs = new ArrayList<>();
+                        try {
+                            responseJSONObject = new JSONObject(response);
+                            if (responseJSONObject.get("status").equals("OK")){
+                                JSONObject resultJSONObject = new JSONObject(responseJSONObject.getString("result"));
+                                refs.add(resultJSONObject.get("reference"));
+                                JSONObject isOpenJSONObject = new JSONObject(resultJSONObject.getString("opening_hours"));
+                                Boolean isOpen = isOpenJSONObject.getBoolean("open_now");
+                            }
+                            Object reference = refs.get(0);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        })
+        {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                return params;
+            }
+        };
+        VolleySingleton.getInstance(MainActivity.this).getRequestQueue().add(stringRequest);
+        return "";
     }
 
     // for converting bitmap into image string

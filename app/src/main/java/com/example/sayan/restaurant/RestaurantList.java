@@ -52,6 +52,7 @@ public class RestaurantList extends Fragment {
             //set String array from resources
             Resources resources = getResources();
         for (Place place : places) {
+            
             titles.add(place.getName().toString());
             descriptions.add("The Rating is: "+place.getRating());
         }
@@ -102,7 +103,6 @@ public class RestaurantList extends Fragment {
                 this.descriptions = descriptions;
                 this.images = images;
             }
-
 
             //override getView(row number[0 to (max-1)], oldview , parent [listview])
             @NonNull
